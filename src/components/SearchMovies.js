@@ -1,10 +1,9 @@
-import React from 'react';
-
-import noPoster from '../assets/images/no-poster.jpg';
+import { useState, useEffect } from 'react';
+//import noPoster from '../assets/images/no-poster.jpg';
 
 function SearchMovies(){
 
-	const movies = [
+	/* const movies = [         example
 		{
 			"Title": "Parchís",
 			"Year": "1983",
@@ -15,12 +14,37 @@ function SearchMovies(){
 			"Year": "1977",
 			"Poster": "N/A"
 		},
-	];
-
-	const keyword = 'PELÍCULA DEMO';
+	]; */
 
 	// Credenciales de API
-	const apiKey = 'X'; // Intenta poner cualquier cosa antes para probar
+	const apiKey = 'bec3ca59'; /* llegó al email */
+
+	/* A partir de lo que yo escriba en el input afectará el estado de movies */
+	const [movies, setMovies] = useState([]); //Este array se llenará con el resultado de las peliculas
+
+	const [keyword, setKeyword] = useState('');
+	/* Cuando envie el formulario voy a setear con lo que yo escriba en el input */
+
+    useEffect(async () => {
+		if(keyword){
+			try {
+				let response = await fetch(`http://www.omdbapi.com/?apiKey=${apiKey}&s=${keyword}`) /* Saco la palabra rambo que viene, y dentro de bastik el keyword */
+				
+				let result = await response.json()
+				if(result.Response === 'True'){
+                    setMovies(result.Search);
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		}
+		
+	}, [keyword]);
+
+	const searchMovie = (e) => {
+		e.preventDefault();
+		setKeyword(e.target.search.value); /* el valor de setKeyword será target.search.value */
+    }
 
 	return(
 		<div className="container-fluid">
@@ -30,13 +54,15 @@ function SearchMovies(){
 					<div className="row my-4">
 						<div className="col-12 col-md-6">
 							{/* Buscador */}
-							<form method="GET">
+
+							<form method="GET" onSubmit={searchMovie}>
 								<div className="form-group">
 									<label htmlFor="">Buscar por título:</label>
-									<input type="text" className="form-control" />
+									<input type="text" className="form-control" name='search'/>
 								</div>
 								<button className="btn btn-info">Search</button>
 							</form>
+
 						</div>
 					</div>
 					<div className="row">
